@@ -1,0 +1,245 @@
+.detail-page {
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  padding: 40px 20px;
+}
+
+.detail-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: var(--bg-secondary);
+  padding: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.back-button {
+  background-color: var(--text-accent);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 30px;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: var(--progress-fill);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.detail-type {
+  text-transform: uppercase;
+  color: var(--text-accent);
+  font-weight: bold;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.detail-header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.detail-header-visual {
+  display: flex;
+  align-items: center;
+}
+
+.detail-icon-small {
+  font-size: 32px;
+}
+
+.detail-icon-small-image {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.detail-image-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.detail-image {
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.detail-progress-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.detail-progress-bar {
+  width: 120px;
+  height: 16px;
+  background-color: var(--progress-bg);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.detail-progress-fill {
+  height: 100%;
+  background-color: var(--progress-fill);
+  border-radius: 8px;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.detail-progress-fill:hover::after {
+  content: attr(title);
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.detail-progress-fill:hover::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--text-primary);
+  z-index: 10;
+}
+
+.detail-progress-level {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  min-width: 40px;
+}
+
+.detail-id {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-family: monospace;
+}
+
+.stars {
+  color: var(--star-color);
+  font-size: 20px;
+}
+
+.detail-content {
+  color: var(--text-primary);
+}
+
+.detail-content h2 {
+  font-size: 32px;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+.detail-company,
+.detail-year {
+  font-size: 18px;
+  color: var(--text-secondary);
+  margin: 10px 0;
+}
+
+.detail-level {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  color: var(--text-secondary);
+  margin: 20px 0;
+}
+
+.detail-icon {
+  font-size: 64px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+
+.detail-link {
+  display: inline-block;
+  margin-top: 15px;
+  color: var(--text-accent);
+  text-decoration: none;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.detail-link:hover {
+  text-decoration: underline;
+  color: var(--progress-fill);
+}
+
+.detail-header-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.detail-category {
+  background-color: var(--text-accent);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.detail-category-header {
+  background-color: var(--text-accent);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.detail-desc {
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 15px 0;
+}
+
+@media (max-width: 768px) {
+  .detail-container {
+    padding: 20px;
+  }
+
+  .detail-content h2 {
+    font-size: 24px;
+  }
+
+  .detail-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}

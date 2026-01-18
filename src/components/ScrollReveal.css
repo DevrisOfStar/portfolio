@@ -1,0 +1,89 @@
+.scroll-reveal {
+  opacity: 0;
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  overflow: hidden;
+}
+
+/* ScrollReveal이 section-block을 감쌀 때 마진 제거 (ScrollReveal 자체에 마진 적용) */
+.scroll-reveal > .section-block {
+  margin-bottom: 0 !important;
+}
+
+/* column 내부의 ScrollReveal들 사이에 마진 추가 */
+.column > .scroll-reveal {
+  display: block;
+}
+
+.column > .scroll-reveal:not(:last-child) {
+  margin-bottom: 20px !important;
+}
+
+/* ScrollReveal 자체에도 마진 추가 */
+.scroll-reveal:has(> .section-block) {
+  margin-bottom: 0;
+}
+
+/* ScrollReveal이 감싸는 section-block들 사이의 간격 */
+.column .scroll-reveal:not(:last-child) {
+  margin-bottom: 0;
+}
+
+/* ScrollReveal이 career-item을 감쌀 때 - display: contents로 레이아웃 유지 */
+.career-details > .scroll-reveal {
+  display: contents;
+}
+
+/* ScrollReveal이 board-list 내부에 있을 때 */
+.board-list > .scroll-reveal {
+  display: contents;
+}
+
+/* board-list가 grid일 때 ScrollReveal 처리 */
+.board-list.scroll-reveal {
+  display: grid;
+}
+
+/* ScrollReveal이 감싸는 요소가 flex item일 때 */
+.career-details .scroll-reveal > .career-item {
+  flex: 1;
+  min-width: 0;
+}
+
+.board-list .scroll-reveal > .board-item {
+  flex-shrink: 0;
+}
+
+/* ScrollReveal이 section을 감쌀 때 */
+.scroll-reveal section {
+  width: 100%;
+}
+
+/* ScrollReveal이 감싸는 요소의 원래 스타일 유지 */
+.scroll-reveal > * {
+  width: 100%;
+}
+
+.scroll-reveal-up {
+  transform: translateY(30px);
+}
+
+.scroll-reveal-down {
+  transform: translateY(-30px);
+}
+
+.scroll-reveal-left {
+  transform: translateX(30px);
+}
+
+.scroll-reveal-right {
+  transform: translateX(-30px);
+}
+
+.scroll-reveal-fade {
+  transform: none;
+}
+
+.scroll-reveal-visible {
+  opacity: 1;
+  transform: translate(0, 0) !important;
+}

@@ -565,13 +565,22 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
   padding: 4px 8px;
   border-radius: 4px;
 }
 
 .status-item:hover {
   background-color: var(--bg-secondary);
+}
+
+.status-item-current {
+  color: var(--text-accent);
+  font-weight: bold;
+}
+
+.status-item-current:hover {
+  color: var(--text-accent);
 }
 
 /* 반응형 디자인 */

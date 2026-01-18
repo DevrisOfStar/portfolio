@@ -9,7 +9,11 @@ function StatusItem({ status }) {
   }
 
   return (
-    <div className="status-item" onClick={handleClick} style={{ cursor: 'pointer' }}>
+    <div 
+      className={`status-item ${status.current ? 'status-item-current' : ''}`}
+      onClick={handleClick} 
+      style={{ cursor: 'pointer' }}
+    >
       {status.text || status}
     </div>
   )

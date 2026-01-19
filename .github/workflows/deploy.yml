@@ -27,7 +27,7 @@ jobs:
       - name: Configure D1 database ID
         working-directory: ./backend
         run: |
-          sed -i "s|PROD_DB_ID_PLACEHOLDER|${{ secrets.PROD_DB_ID }}|g" wrangler.toml
+          sed -i "s|PROD_DB_ID|${{ secrets.PROD_DB_ID }}|g" wrangler.toml
 
       - name: Deploy Production
         uses: cloudflare/wrangler-action@v3

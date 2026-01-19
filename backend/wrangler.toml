@@ -17,6 +17,10 @@ bucket_name = "PROD_R2_BUCKET"
 [env.production]
 name = "portfolio-api"
 # 프로덕션 환경의 database_id는 GitHub Actions에서 --d1 옵션으로 전달됩니다
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "portfolio-data"
+database_id = "PROD_DB_ID"  # GitHub Actions에서 실제 값으로 교체됨
 
 [env.development]
 name = "portfolio-api-dev"

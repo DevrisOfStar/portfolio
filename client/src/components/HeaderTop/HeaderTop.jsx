@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
-import { PERSONAL_INFO, INTRO_STATEMENTS } from '../../data/constants'
+import { usePortfolio } from '../../contexts/PortfolioContext'
 import IntroStatement from './IntroStatement'
 import ScrollReveal from '../ScrollReveal'
 import HamburgerButton from '../HamburgerButton/HamburgerButton'
 import Sidebar from '../Sidebar/Sidebar'
 
 function HeaderTop() {
+  const { data, loading } = usePortfolio()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const toggleSidebar = () => {
@@ -16,6 +17,25 @@ function HeaderTop() {
     setSidebarOpen(false)
   }
 
+  // 데이터 로딩 중이거나 없으면 빈 값 반환
+  if (loading || !data) {
+    return (
+      <>
+        <header className="header">
+          <HamburgerButton onClick={toggleSidebar} isOpen={sidebarOpen} />
+          <div className="header-top">
+            <h1 className="title">RESUME</h1>
+            <div className="intro-statements">로딩 중...</div>
+          </div>
+        </header>
+        <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
+      </>
+    )
+  }
+
+  const personalInfo = data.personalInfo || { name: '', email: '', github: null }
+  const introStatements = data.introStatements || []
+
   return (
     <>
       <header className="header">
@@ -24,7 +44,7 @@ function HeaderTop() {
           <div className="header-top">
             <h1 className="title">RESUME</h1>
             <div className="intro-statements">
-              {INTRO_STATEMENTS.map((stmt, idx) => (
+              {introStatements.map((stmt, idx) => (
                 <ScrollReveal key={idx} direction="up" delay={idx * 100}>
                   <IntroStatement statement={stmt} />
                 </ScrollReveal>
@@ -34,8 +54,8 @@ function HeaderTop() {
         </ScrollReveal>
         <ScrollReveal direction="up" delay={300}>
           <div className="personal-info">
-            {PERSONAL_INFO.name} | {PERSONAL_INFO.email} | 
-            깃허브 @{PERSONAL_INFO.github}
+            {personalInfo.name} | {personalInfo.email} | 
+            {personalInfo.github && ` 깃허브 @${personalInfo.github}`}
           </div>
         </ScrollReveal>
       </header>

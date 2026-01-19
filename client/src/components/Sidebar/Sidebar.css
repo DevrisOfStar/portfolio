@@ -138,6 +138,42 @@
   background-color: var(--bg-secondary);
 }
 
+/* Sidebar Buttons */
+.sidebar-button {
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.sidebar-button:hover {
+  background-color: var(--bg-tertiary);
+  border-color: var(--text-accent);
+  transform: translateY(-1px);
+}
+
+.sidebar-button-primary {
+  background-color: var(--text-accent, #007bff);
+  color: white;
+  border-color: var(--text-accent, #007bff);
+}
+
+.sidebar-button-primary:hover {
+  background-color: var(--text-accent-hover, #0056b3);
+  border-color: var(--text-accent-hover, #0056b3);
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
   .sidebar {

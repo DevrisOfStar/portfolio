@@ -1,22 +1,56 @@
 import React from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { portfolio_info } from '../data/constants'
+import { usePortfolio } from '../contexts/PortfolioContext'
 import './DetailPage.css'
+
+// 날짜를 yy.mm.dd 형식으로 변환
+function formatDate(dateString) {
+  if (!dateString) return dateString;
+  
+  try {
+    // YYYY-MM-DD 형식인 경우
+    if (dateString.includes('-')) {
+      const date = new Date(dateString);
+      if (!isNaN(date.getTime())) {
+        const year = date.getFullYear().toString().slice(-2);
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        return `${year}.${month}.${day}`;
+      }
+    }
+    
+    // 이미 다른 형식인 경우 그대로 반환
+    return dateString;
+  } catch (error) {
+    return dateString;
+  }
+}
 
 function DetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { data, loading } = usePortfolio()
 
-  // portfolio_info에서 모든 데이터를 하나의 배열로 합치기
+  if (loading || !data) {
+    return (
+      <div className="detail-page">
+        <div className="detail-container">
+          <p>로딩 중...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // 모든 데이터를 하나의 배열로 합치기
   const allData = [
-    ...portfolio_info.career.details.map(item => ({ ...item, type: 'career' })),
-    ...portfolio_info.generalTendencies.map(item => ({ ...item, type: 'tendency' })),
-    ...portfolio_info.hobbies.map(item => ({ ...item, type: 'hobby' })),
-    ...Object.values(portfolio_info.languageSkills).map(group => group.content).flat().map(item => ({ ...item, type: 'language' })),
-    ...portfolio_info.basicAbilities.map(item => ({ ...item, type: 'ability' })),
-    ...Object.values(portfolio_info.workSkills).map(group => group.content).flat().map(item => ({ ...item, type: 'work' })),
-    ...portfolio_info.blog.map(item => ({ ...item, type: 'blog' })),
-    ...portfolio_info.currentStatus.map(item => ({ ...item, type: 'status' }))
+    ...(data.career?.details || []).map(item => ({ ...item, type: 'career' })),
+    ...(data.generalTendencies || []).map(item => ({ ...item, type: 'tendency' })),
+    ...(data.hobbies || []).map(item => ({ ...item, type: 'hobby' })),
+    ...Object.values(data.languageSkills || {}).map(group => group.content).flat().map(item => ({ ...item, type: 'language' })),
+    ...(data.basicAbilities || []).map(item => ({ ...item, type: 'ability' })),
+    ...Object.values(data.workSkills || {}).map(group => group.content).flat().map(item => ({ ...item, type: 'work' })),
+    ...(data.blog || []).map(item => ({ ...item, type: 'blog' })),
+    ...(data.currentStatus || []).map(item => ({ ...item, type: 'status' }))
   ]
 
   const item = allData.find(data => data.id === id)
@@ -91,10 +125,68 @@ function DetailPage() {
         )
       case 'blog':
         return (
-          <div className="detail-content">
-            {item.date && <p className="detail-year">Date: {item.date}</p>}
+          <div className="detail-content blog-detail-content">
             {item.title && <h2>{item.title}</h2>}
-            {item.content && <p className="detail-desc">{item.content}</p>}
+            {item.items && item.items.length > 0 && (
+              <div className="blog-content-items">
+                {item.items.map((contentItem, idx) => {
+                  switch (contentItem.type) {
+                    case 'heading':
+                      return <h3 key={idx} style={{ marginTop: '24px', marginBottom: '12px' }}>{contentItem.content}</h3>
+                    case 'code':
+                      return (
+                        <pre key={idx} style={{ 
+                          background: 'var(--bg-secondary)', 
+                          padding: '16px', 
+                          borderRadius: '6px', 
+                          overflow: 'auto',
+                          margin: '16px 0'
+                        }}>
+                          <code>{contentItem.content}</code>
+                        </pre>
+                      )
+                    case 'quote':
+                      return (
+                        <blockquote key={idx} style={{ 
+                          borderLeft: '4px solid var(--text-accent)', 
+                          paddingLeft: '16px', 
+                          margin: '16px 0',
+                          fontStyle: 'italic',
+                          color: 'var(--text-secondary)'
+                        }}>
+                          {contentItem.content}
+                        </blockquote>
+                      )
+                    case 'image':
+                      return (
+                        <div key={idx} style={{ margin: '16px 0' }}>
+                          <img 
+                            src={contentItem.content} 
+                            alt="" 
+                            style={{ 
+                              maxWidth: '100%', 
+                              height: 'auto',
+                              borderRadius: '8px'
+                            }} 
+                          />
+                        </div>
+                      )
+                    case 'text':
+                    default:
+                      return (
+                        <p key={idx} style={{ margin: '12px 0', lineHeight: '1.8' }}>
+                          {contentItem.content.split('\n').map((line, lineIdx) => (
+                            <React.Fragment key={lineIdx}>
+                              {line}
+                              {lineIdx < contentItem.content.split('\n').length - 1 && <br />}
+                            </React.Fragment>
+                          ))}
+                        </p>
+                      )
+                  }
+                })}
+              </div>
+            )}
           </div>
         )
       case 'status':
@@ -204,13 +296,7 @@ function DetailPage() {
           </div>
         )
       case 'blog':
-        return (
-          <div className="detail-header-visual">
-            {item.category && (
-              <span className="detail-category-header">{item.category}</span>
-            )}
-          </div>
-        )
+        return null
       default:
         return null
     }
@@ -226,7 +312,14 @@ function DetailPage() {
           <span className="detail-type">{item.type}</span>
           <div className="detail-header-right">
             {renderHeaderVisual()}
-            <span className="detail-id">ID: {item.id}</span>
+            {item.type === 'blog' ? (
+              <>
+                {item.category && <span className="detail-category-header" style={{ marginRight: '12px' }}>{item.category}</span>}
+                <span className="detail-id">날짜 : {item.date ? formatDate(item.date) : item.id}</span>
+              </>
+            ) : (
+              <span className="detail-id">ID: {item.id}</span>
+            )}
           </div>
         </div>
         {renderDetail()}

@@ -1,0 +1,26 @@
+{
+  "name": "portfolio-backend",
+  "version": "1.0.0",
+  "description": "Portfolio backend API using Cloudflare Workers and D1",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:local": "wrangler d1 execute portfolio-data --local --file=./schema.sql",
+    "db:remote": "wrangler d1 execute portfolio-data --remote --file=./schema.sql",
+    "db:migrate": "wrangler d1 execute portfolio-data --remote --file=./migrations/init_data.sql"
+  },
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "d1",
+    "api"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240117.0",
+    "typescript": "^5.3.3",
+    "wrangler": "^4.59.2"
+  }
+}

@@ -1,17 +1,28 @@
 import React from 'react'
-import { CAREER } from '../../data/constants'
+import { usePortfolio } from '../../contexts/PortfolioContext'
 import CareerItem from './CareerItem'
 import ScrollReveal from '../ScrollReveal'
 
 function Career() {
-  // 데이터를 정형화된 형태로 변환
-  const careerItems = CAREER.details
+  const { data, loading } = usePortfolio()
+
+  if (loading || !data || !data.career) {
+    return (
+      <section className="career-section">
+        <div className="career-timeline">
+          <div className="career-main">로딩 중...</div>
+        </div>
+      </section>
+    )
+  }
+
+  const careerItems = data.career.details || []
 
   return (
     <section className="career-section">
       <div className="career-timeline">
         <ScrollReveal direction="left" delay={100}>
-          <div className="career-main">{CAREER.total}</div>
+          <div className="career-main">{data.career.total}</div>
         </ScrollReveal>
         <div className="career-details">
           {careerItems.map((item, idx) => (

@@ -2,25 +2,38 @@ name = "portfolio-api"
 main = "src/index.ts"
 compatibility_date = "2024-12-31"
 
+# 기본 설정 (로컬 개발용)
 [[d1_databases]]
 binding = "DB"
 database_name = "portfolio-data"
-database_id = "PROD_DB_ID"  # 로컬 개발용 - 프로덕션은 GitHub Actions에서 secrets로 전달
+database_id = "DEV_DB_ID"  # 로컬 개발 시 사용
 
-# Cloudflare R2 버킷 (이미지 저장용)
 [[r2_buckets]]
 binding = "IMAGES"
-bucket_name = "PROD_R2_BUCKET"
-# 로컬 개발용 (선택사항)
-# preview_bucket_name = "portfolio-images-preview"
+bucket_name = "DEV_R2_BUCKET"  # 로컬 개발 시 사용
 
+# 프로덕션 환경 설정
 [env.production]
 name = "portfolio-api"
-# 프로덕션 환경의 database_id는 GitHub Actions에서 --d1 옵션으로 전달됩니다
+
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "portfolio-data"
 database_id = "PROD_DB_ID"  # GitHub Actions에서 실제 값으로 교체됨
 
+[[env.production.r2_buckets]]
+binding = "IMAGES"
+bucket_name = "PROD_R2_BUCKET"  # GitHub Actions에서 실제 값으로 교체됨
+
+# 개발 환경 설정
 [env.development]
 name = "portfolio-api-dev"
+
+[[env.development.d1_databases]]
+binding = "DB"
+database_name = "portfolio-data"
+database_id = "DEV_DB_ID"
+
+[[env.development.r2_buckets]]
+binding = "IMAGES"
+bucket_name = "DEV_R2_BUCKET"  # 개발용 bucket 이름 (실제 bucket 이름으로 변경 필요)

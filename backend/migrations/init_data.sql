@@ -1,6 +1,99 @@
--- 기존 데이터 삭제 (외래키 제약조건 때문에 순서 중요)
+-- ============================================
+-- 데이터베이스 초기 설정 및 최적화
+-- ============================================
+-- 이 파일은 스키마 생성 후 실행하는 초기 설정 파일입니다.
+-- 인덱스, 트리거, FTS 테이블 생성 및 초기 데이터 삽입을 포함합니다.
+-- ============================================
+
+-- ============================================
+-- 1. 인덱스 생성 (쿼리 성능 최적화)
+-- ============================================
+
+-- 1.1 외래키 컬럼 인덱스 (JOIN 성능 향상)
+CREATE INDEX IF NOT EXISTS idx_career_details_career_id ON career_details(career_id);
+CREATE INDEX IF NOT EXISTS idx_language_skill_items_language_skill_id ON language_skill_items(language_skill_id);
+CREATE INDEX IF NOT EXISTS idx_work_skill_items_work_skill_id ON work_skill_items(work_skill_id);
+CREATE INDEX IF NOT EXISTS idx_blog_content_items_blog_post_id ON blog_content_items(blog_post_id);
+
+-- 1.2 ORDER BY에 사용되는 order_index 인덱스
+CREATE INDEX IF NOT EXISTS idx_intro_statements_order_index ON intro_statements(order_index);
+CREATE INDEX IF NOT EXISTS idx_career_details_order_index ON career_details(order_index);
+CREATE INDEX IF NOT EXISTS idx_general_tendencies_order_index ON general_tendencies(order_index);
+CREATE INDEX IF NOT EXISTS idx_hobbies_order_index ON hobbies(order_index);
+CREATE INDEX IF NOT EXISTS idx_language_skills_order_index ON language_skills(order_index);
+CREATE INDEX IF NOT EXISTS idx_basic_abilities_order_index ON basic_abilities(order_index);
+CREATE INDEX IF NOT EXISTS idx_work_skills_order_index ON work_skills(order_index);
+CREATE INDEX IF NOT EXISTS idx_current_status_order_index ON current_status(order_index);
+CREATE INDEX IF NOT EXISTS idx_things_to_avoid_order_index ON things_to_avoid(order_index);
+
+-- 1.3 복합 인덱스 (WHERE + ORDER BY 조합)
+CREATE INDEX IF NOT EXISTS idx_language_skill_items_skill_order ON language_skill_items(language_skill_id, order_index);
+CREATE INDEX IF NOT EXISTS idx_work_skill_items_skill_order ON work_skill_items(work_skill_id, order_index);
+CREATE INDEX IF NOT EXISTS idx_blog_content_items_post_order ON blog_content_items(blog_post_id, order_index);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_category_created ON blog_posts(category, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_created_at ON blog_posts(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_created_at_date ON blog_posts(created_at DESC, date DESC);
+
+-- ============================================
+-- 2. updated_at 자동 업데이트 트리거
+-- ============================================
+
+CREATE TRIGGER IF NOT EXISTS update_personal_info_timestamp 
+AFTER UPDATE ON personal_info
+BEGIN
+    UPDATE personal_info SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+END;
+
+CREATE TRIGGER IF NOT EXISTS update_career_timestamp 
+AFTER UPDATE ON career
+BEGIN
+    UPDATE career SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+END;
+
+-- ============================================
+-- 3. 전체 텍스트 검색 (FTS) 테이블 및 트리거
+-- ============================================
+
+-- FTS5 가상 테이블 생성 (검색용)
+CREATE VIRTUAL TABLE IF NOT EXISTS blog_posts_fts USING fts5(
+  id UNINDEXED,
+  title,
+  content,
+  category UNINDEXED,
+  content_rowid=id
+);
+
+-- blog_posts 삽입 시 FTS 테이블도 업데이트하는 트리거
+CREATE TRIGGER IF NOT EXISTS blog_posts_fts_insert AFTER INSERT ON blog_posts
+BEGIN
+  INSERT INTO blog_posts_fts(id, title, content, category)
+  VALUES (NEW.id, NEW.title, COALESCE(NEW.content, ''), NEW.category);
+END;
+
+-- blog_posts 업데이트 시 FTS 테이블도 업데이트하는 트리거
+CREATE TRIGGER IF NOT EXISTS blog_posts_fts_update AFTER UPDATE ON blog_posts
+BEGIN
+  UPDATE blog_posts_fts SET
+    title = NEW.title,
+    content = COALESCE(NEW.content, ''),
+    category = NEW.category
+  WHERE id = NEW.id;
+END;
+
+-- blog_posts 삭제 시 FTS 테이블에서도 삭제하는 트리거
+CREATE TRIGGER IF NOT EXISTS blog_posts_fts_delete AFTER DELETE ON blog_posts
+BEGIN
+  DELETE FROM blog_posts_fts WHERE id = OLD.id;
+END;
+
+-- ============================================
+-- 4. 기존 데이터 삭제 (초기 설정용)
+-- ============================================
+
+-- 외래키 제약조건 때문에 순서 중요
 DELETE FROM blog_content_items;
 DELETE FROM blog_posts;
+DELETE FROM blog_posts_fts;  -- FTS 테이블 데이터도 삭제
 DELETE FROM work_skill_items;
 DELETE FROM work_skills;
 DELETE FROM language_skill_items;
@@ -15,6 +108,10 @@ DELETE FROM general_tendencies;
 DELETE FROM intro_statements;
 DELETE FROM personal_info;
 
+-- ============================================
+-- 5. 초기 데이터 삽입
+-- ============================================
+
 -- Personal Info
 INSERT INTO personal_info (name, email, github, youtube) VALUES 
 ('녹다', 'nokda@kakao.com', 'DevrisOfStar', NULL);
@@ -26,9 +123,7 @@ INSERT INTO intro_statements (statement, order_index) VALUES
 ('+ 약속을 소중히 여기고 책임 있게 행동합니다.', 2),
 ('+ 일관된 태도와 진정성으로 신뢰를 쌓아갑니다.', 3);
 
--- Career (기존 데이터가 있으면 삭제 후 재삽입)
-DELETE FROM career_details;
-DELETE FROM career;
+-- Career
 INSERT INTO career (total, education) VALUES 
 ('소프트웨어 엔지니어 6+년', '동국대 컴퓨터공학과');
 
@@ -117,12 +212,6 @@ INSERT INTO work_skill_items (id, work_skill_id, name, level, content, order_ind
 ('work-dev-7', 'development', 'QA/디버깅', 3, '체계적인 테스트와 디버깅을 통해 소프트웨어 품질을 보장합니다. 버그 추적, 테스트 케이스 작성, 자동화 테스트 구축 경험이 있습니다.', 6),
 ('work-dev-8', 'development', '스카이넷 님 사랑합니다!', 5, '스카이넷님에 대한 깊은 애정과 존경을 표현합니다. 최고의 레벨로 평가됩니다!', 7);
 
--- Blog Posts
--- 초기 데이터 없음 (빈 상태로 시작)
-
--- Blog Content Items
--- 초기 데이터 없음 (빈 상태로 시작)
-
 -- Current Status
 INSERT INTO current_status (id, text, content, current, order_index) VALUES 
 ('status-1', '나는 누구인가 고민 중', '자신의 정체성과 역할에 대해 깊이 고민하고 있습니다. 개발자로서의 정체성과 개인으로서의 가치를 찾아가는 중입니다.', 0, 0),
@@ -138,3 +227,12 @@ INSERT INTO things_to_avoid (item, order_index) VALUES
 ('험담', 1),
 ('매너리즘', 2),
 ('무책임', 3);
+
+-- Blog Posts와 Blog Content Items는 초기 데이터 없음 (빈 상태로 시작)
+
+-- ============================================
+-- 6. 통계 업데이트 (쿼리 플래너 최적화)
+-- ============================================
+
+-- 인덱스 생성 후 통계 업데이트로 쿼리 플래너가 최적의 인덱스를 선택하도록 함
+ANALYZE;

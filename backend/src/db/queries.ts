@@ -216,23 +216,40 @@ export async function getBlogPosts(db: D1Database, category?: string, search?: s
   
   const postsResult = await stmt.all<{ id: string; date: string; category: string; title: string; content: string | null; thumbnail: string | null; created_at: string | null }>();
   
-  // 각 포스트의 콘텐츠 아이템 가져오기
-  const posts: BlogPost[] = [];
-  for (const post of postsResult.results) {
-    const contentItems = await db.prepare(
-      'SELECT type, content FROM blog_content_items WHERE blog_post_id = ? ORDER BY order_index'
-    ).bind(post.id).all<BlogContentItem>();
-    
-    posts.push({
-      id: post.id,
-      date: post.date,
-      category: post.category,
-      title: post.title,
-      content: post.content,
-      thumbnail: post.thumbnail,
-      items: contentItems.results
+  // N+1 문제 해결: 모든 포스트의 콘텐츠 아이템을 한 번에 가져오기
+  if (postsResult.results.length === 0) {
+    return [];
+  }
+  
+  // 모든 포스트 ID를 IN 절로 한 번에 조회
+  const postIds = postsResult.results.map(p => p.id);
+  const placeholders = postIds.map(() => '?').join(',');
+  const allContentItems = await db.prepare(
+    `SELECT blog_post_id, type, content FROM blog_content_items WHERE blog_post_id IN (${placeholders}) ORDER BY blog_post_id, order_index`
+  ).bind(...postIds).all<{ blog_post_id: string; type: string; content: string }>();
+  
+  // 포스트 ID별로 콘텐츠 아이템 그룹화
+  const contentItemsMap = new Map<string, BlogContentItem[]>();
+  for (const item of allContentItems.results) {
+    if (!contentItemsMap.has(item.blog_post_id)) {
+      contentItemsMap.set(item.blog_post_id, []);
+    }
+    contentItemsMap.get(item.blog_post_id)!.push({
+      type: item.type as BlogContentItem['type'],
+      content: item.content
     });
   }
+  
+  // 포스트와 콘텐츠 아이템 결합
+  const posts: BlogPost[] = postsResult.results.map(post => ({
+    id: post.id,
+    date: post.date,
+    category: post.category,
+    title: post.title,
+    content: post.content,
+    thumbnail: post.thumbnail,
+    items: contentItemsMap.get(post.id) || []
+  }));
   
   return posts;
 }
@@ -244,6 +261,7 @@ export async function getBlogPost(db: D1Database, id: string): Promise<BlogPost 
     return null;
   }
   
+  // 인덱스를 활용한 효율적인 조회
   const contentItems = await db.prepare(
     'SELECT type, content FROM blog_content_items WHERE blog_post_id = ? ORDER BY order_index'
   ).bind(id).all<BlogContentItem>();

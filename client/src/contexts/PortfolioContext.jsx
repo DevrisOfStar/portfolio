@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { fetchPortfolioData } from '../data/constants';
+import { fetchPortfolioData } from '../data/portfolioApi';
 
 const PortfolioContext = createContext(null);
 

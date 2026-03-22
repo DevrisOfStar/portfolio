@@ -2,167 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import { getApiKey, setApiKey, isLocalEnvironment } from '../utils/apiKey'
+import { parseMarkdownToItems } from '../utils/markdownParser'
 import './BlogWritePage.css'
 
 const CATEGORIES = ['개발', '기획', '번역', '기여', '커뮤니티']
-
-// 간단한 마크다운 파서 (마크다운을 content items로 변환)
-function parseMarkdownToItems(markdown) {
-  if (!markdown.trim()) return []
-  
-  const lines = markdown.split('\n')
-  const items = []
-  let currentParagraph = []
-  let currentCodeBlock = []
-  let inCodeBlock = false
-  let codeLanguage = ''
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]
-    
-    // 코드 블록 처리
-    if (line.startsWith('```')) {
-      if (inCodeBlock) {
-        // 코드 블록 종료
-        if (currentCodeBlock.length > 0) {
-          items.push({
-            type: 'code',
-            content: currentCodeBlock.join('\n')
-          })
-        }
-        currentCodeBlock = []
-        inCodeBlock = false
-        codeLanguage = ''
-      } else {
-        // 코드 블록 시작
-        if (currentParagraph.length > 0) {
-          items.push({
-            type: 'text',
-            content: currentParagraph.join('\n')
-          })
-          currentParagraph = []
-        }
-        codeLanguage = line.slice(3).trim()
-        inCodeBlock = true
-      }
-      continue
-    }
-
-    if (inCodeBlock) {
-      currentCodeBlock.push(line)
-      continue
-    }
-
-    // 제목 처리
-    if (line.startsWith('# ')) {
-      if (currentParagraph.length > 0) {
-        items.push({
-          type: 'text',
-          content: currentParagraph.join('\n')
-        })
-        currentParagraph = []
-      }
-      items.push({
-        type: 'heading',
-        content: line.slice(2).trim()
-      })
-      continue
-    }
-
-    if (line.startsWith('## ')) {
-      if (currentParagraph.length > 0) {
-        items.push({
-          type: 'text',
-          content: currentParagraph.join('\n')
-        })
-        currentParagraph = []
-      }
-      items.push({
-        type: 'heading',
-        content: line.slice(3).trim()
-      })
-      continue
-    }
-
-    if (line.startsWith('### ')) {
-      if (currentParagraph.length > 0) {
-        items.push({
-          type: 'text',
-          content: currentParagraph.join('\n')
-        })
-        currentParagraph = []
-      }
-      items.push({
-        type: 'heading',
-        content: line.slice(4).trim()
-      })
-      continue
-    }
-
-    // 인용문 처리
-    if (line.startsWith('> ')) {
-      if (currentParagraph.length > 0) {
-        items.push({
-          type: 'text',
-          content: currentParagraph.join('\n')
-        })
-        currentParagraph = []
-      }
-      items.push({
-        type: 'quote',
-        content: line.slice(2).trim()
-      })
-      continue
-    }
-
-    // 이미지 처리 (![alt](url))
-    const imageMatch = line.match(/^!\[([^\]]*)\]\(([^)]+)\)$/)
-    if (imageMatch) {
-      if (currentParagraph.length > 0) {
-        items.push({
-          type: 'text',
-          content: currentParagraph.join('\n')
-        })
-        currentParagraph = []
-      }
-      items.push({
-        type: 'image',
-        content: imageMatch[2]
-      })
-      continue
-    }
-
-    // 빈 줄 처리
-    if (line.trim() === '') {
-      if (currentParagraph.length > 0) {
-        items.push({
-          type: 'text',
-          content: currentParagraph.join('\n')
-        })
-        currentParagraph = []
-      }
-      continue
-    }
-
-    // 일반 텍스트
-    currentParagraph.push(line)
-  }
-
-  // 남은 내용 처리
-  if (inCodeBlock && currentCodeBlock.length > 0) {
-    items.push({
-      type: 'code',
-      content: currentCodeBlock.join('\n')
-    })
-  } else if (currentParagraph.length > 0) {
-    items.push({
-      type: 'text',
-      content: currentParagraph.join('\n')
-    })
-  }
-
-  return items
-}
 
 function BlogWritePage() {
   const navigate = useNavigate()
@@ -228,6 +71,7 @@ function BlogWritePage() {
   }
 
   // API 키 저장
+  // apiKey는 모달 입력과 연결된 state (value={apiKey}, setApiKeyState로 갱신)
   const handleApiKeySubmit = () => {
     if (apiKey.trim()) {
       setApiKey(apiKey.trim())

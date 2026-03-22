@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { useNavigate } from 'react-router-dom'
 import './BoardItem.css'
 
@@ -39,6 +40,17 @@ function BoardItem({ item, variant = 'grid' }) {
       </div>
     </div>
   )
+}
+
+BoardItem.propTypes = {
+  item: PropTypes.shape({
+    id: PropTypes.string,
+    date: PropTypes.string,
+    category: PropTypes.string,
+    title: PropTypes.string,
+    thumbnail: PropTypes.string
+  }).isRequired,
+  variant: PropTypes.oneOf(['grid', 'list'])
 }
 
 export default BoardItem

@@ -83,18 +83,6 @@ async function fetchAdminApi(endpoint, options = {}, apiKey) {
 export const api = {
   // 전체 포트폴리오 데이터
   getPortfolio: () => fetchApi('/api/portfolio'),
-  
-  // 블로그 목록
-  getBlogPosts: (category, search) => {
-    const params = new URLSearchParams();
-    if (category) params.append('category', category);
-    if (search) params.append('search', search);
-    const query = params.toString();
-    return fetchApi(`/api/blog${query ? `?${query}` : ''}`);
-  },
-  
-  // 블로그 상세
-  getBlogPost: (id) => fetchApi(`/api/blog/${id}`),
 
   // 관리자 API (블로그 글 작성)
   createBlogPost: async (data, apiKey) => {
@@ -110,15 +98,20 @@ export const api = {
     formData.append('path', path);
 
     const url = `${API_BASE_URL}/api/blog/images`;
-    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
     try {
       const response = await fetch(url, {
         method: 'POST',
+        signal: controller.signal,
         headers: {
           'X-API-Key': apiKey,
         },
         body: formData,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: response.statusText }));
@@ -127,8 +120,12 @@ export const api = {
 
       return await response.json();
     } catch (error) {
+      clearTimeout(timeoutId);
       if (error instanceof ApiError) {
         throw error;
+      }
+      if (error.name === 'AbortError') {
+        throw new ApiError('Request timeout: API server did not respond', 0);
       }
       throw new ApiError(`Network Error: ${error.message}`, 0);
     }

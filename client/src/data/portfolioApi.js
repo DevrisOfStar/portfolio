@@ -9,15 +9,15 @@ async function fetchPortfolioData() {
   if (portfolioCache) {
     return portfolioCache;
   }
-  
+
   if (portfolioPromise) {
     return portfolioPromise;
   }
-  
+
   portfolioPromise = (async () => {
     try {
       const data = await api.getPortfolio();
-      
+
       // API 응답을 기존 구조로 변환
       portfolioCache = {
         personalInfo: data.personalInfo,
@@ -32,19 +32,17 @@ async function fetchPortfolioData() {
         blog: data.blog,
         currentStatus: data.currentStatus
       };
-      
+
       return portfolioCache;
     } catch (error) {
       console.error('Failed to fetch portfolio data:', error);
-      // 에러를 다시 throw하여 PortfolioContext에서 처리하도록 함
       throw error;
     } finally {
       portfolioPromise = null;
     }
   })();
-  
+
   return portfolioPromise;
 }
 
-// 데이터 로드 함수 export
 export { fetchPortfolioData };

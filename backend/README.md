@@ -39,7 +39,8 @@ database_id = "여기에_database_id_추가"  # 생성 시 반환된 ID
 npx wrangler r2 bucket create portfolio-images
 ```
 
-R2 버킷은 `wrangler.toml`에 이미 설정되어 있습니다. 생성 후 바로 사용 가능합니다.
+R2 버킷은 `wrangler.toml`에서 `portfolio-images`로 설정되어 있습니다.
+버킷 생성 후 바로 사용 가능합니다.
 
 ## 데이터베이스 관리
 
@@ -179,9 +180,10 @@ GitHub 저장소의 **Settings → Secrets and variables → Actions**에서 다
 #### 배포 과정
 
 1. 코드가 `main` 브랜치에 push되면 자동으로 워크플로우가 실행됩니다
-2. Node.js 환경 설정 및 의존성 설치
-3. `wrangler deploy --env production --d1 DB=${{ secrets.PROD_DB_ID }}` 명령어로 배포
-4. `database_id`는 GitHub Secrets에서 안전하게 전달되므로 공개 저장소에 노출되지 않습니다
+2. 필수 시크릿(`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `PROD_DB_ID`) 존재 여부를 검증합니다
+3. `PROD_DB_ID`를 `wrangler.toml`의 프로덕션 `database_id`에 주입합니다
+4. `wrangler deploy --env production` 명령어로 배포합니다
+5. `database_id`는 GitHub Secrets에서 안전하게 전달되므로 공개 저장소에 노출되지 않습니다
 
 ## API 엔드포인트
 

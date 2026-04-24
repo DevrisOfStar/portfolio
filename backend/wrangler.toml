@@ -10,7 +10,7 @@ database_id = "DEV_DB_ID"  # 로컬 개발 시 사용
 
 [[r2_buckets]]
 binding = "IMAGES"
-bucket_name = "DEV_R2_BUCKET"  # 로컬 개발 시 사용
+bucket_name = "portfolio-images"  # 공용 R2 bucket
 
 # 프로덕션 환경 설정
 [env.production]
@@ -23,7 +23,7 @@ database_id = "PROD_DB_ID"  # GitHub Actions에서 실제 값으로 교체됨
 
 [[env.production.r2_buckets]]
 binding = "IMAGES"
-bucket_name = "PROD_R2_BUCKET"  # GitHub Actions에서 실제 값으로 교체됨
+bucket_name = "portfolio-images"
 
 # 개발 환경 설정
 [env.development]
@@ -36,4 +36,4 @@ database_id = "DEV_DB_ID"
 
 [[env.development.r2_buckets]]
 binding = "IMAGES"
-bucket_name = "DEV_R2_BUCKET"  # 개발용 bucket 이름 (실제 bucket 이름으로 변경 필요)
+bucket_name = "portfolio-images"

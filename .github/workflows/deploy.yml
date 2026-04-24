@@ -10,7 +10,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     name: Deploy Production
-    environment: PortFolio_prod 
+    environment: PortFolio_prod
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,6 +19,21 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+
+      - name: Validate required secrets
+        run: |
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
+            echo "Missing required secret: CLOUDFLARE_API_TOKEN"
+            exit 1
+          fi
+          if [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
+            echo "Missing required secret: CLOUDFLARE_ACCOUNT_ID"
+            exit 1
+          fi
+          if [ -z "${{ secrets.PROD_DB_ID }}" ]; then
+            echo "Missing required secret: PROD_DB_ID"
+            exit 1
+          fi
 
       - name: Install dependencies
         working-directory: ./backend

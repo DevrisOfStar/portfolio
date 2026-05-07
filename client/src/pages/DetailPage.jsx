@@ -34,7 +34,6 @@ function DetailPage() {
   const allData = useMemo(() => {
     if (loading || !data) return []
     return [
-      ...(data.career?.details || []).map(item => ({ ...item, type: 'career' })),
       ...(data.generalTendencies || []).map(item => ({ ...item, type: 'tendency' })),
       ...(data.hobbies || []).map(item => ({ ...item, type: 'hobby' })),
       ...Object.values(data.languageSkills || {}).map(group => group.content).flat().map(item => ({ ...item, type: 'language' })),

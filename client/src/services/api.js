@@ -56,15 +56,20 @@ async function fetchAdminApi(endpoint, options = {}, apiKey) {
   }
 
   const url = `${API_BASE_URL}${endpoint}`;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
   
   try {
     const response = await fetch(url, {
       ...options,
+      signal: controller.signal,
       headers: {
         'X-API-Key': apiKey,
         ...options.headers,
       },
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ error: response.statusText }));
@@ -76,7 +81,12 @@ async function fetchAdminApi(endpoint, options = {}, apiKey) {
     if (error instanceof ApiError) {
       throw error;
     }
+    if (error.name === 'AbortError') {
+      throw new ApiError('Request timeout: API server did not respond', 0);
+    }
     throw new ApiError(`Network Error: ${error.message}`, 0);
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 

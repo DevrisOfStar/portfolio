@@ -3,13 +3,13 @@
 ## 🔴 높은 우선순위 (Critical)
 
 ### 보안
-- [ ] **CORS 설정 제한**
+- [x] **CORS 설정 제한**
   - 현재: `Access-Control-Allow-Origin: '*'` (모든 도메인 허용)
   - 개선: 특정 도메인만 허용하도록 제한
   - 파일: `backend/src/routes/portfolio.ts`, `backend/src/routes/blog.ts`
   - 예시: `process.env.ALLOWED_ORIGIN || 'http://localhost:5173'`
 
-- [ ] **이미지 업로드 검증 추가**
+- [x] **이미지 업로드 검증 추가**
   - 현재: 파일 타입/크기 검증 없음
   - 개선: MIME 타입, 파일 크기, 확장자 검증 추가
   - 파일: `backend/src/routes/blog.ts` (이미지 업로드 부분)
@@ -18,7 +18,7 @@
     - 최대 파일 크기: 5MB
     - 파일 확장자 검증
 
-- [ ] **API 키 관리 개선**
+- [x] **API 키 관리 개선**
   - 현재: `fetchAdminApi`에 타임아웃 없음
   - 개선: `fetchApi`처럼 타임아웃 추가
   - 파일: `client/src/services/api.js`
@@ -41,7 +41,7 @@
   - 개선: ID 형식 검증 추가 (예: UUID, 특정 패턴)
   - 파일: `backend/src/routes/blog.ts`
 
-- [ ] **이미지 경로 검증**
+- [x] **이미지 경로 검증**
   - 현재: `path` 파라미터에 `../` 등 경로 조작 가능
   - 개선: 경로 정규화 및 검증
   - 파일: `backend/src/routes/blog.ts` (이미지 업로드 부분)
@@ -54,7 +54,7 @@
   - 개선: 통일된 에러 핸들러 미들웨어 도입
   - 파일: `backend/src/routes/portfolio.ts`, `backend/src/routes/blog.ts`
 
-- [ ] **에러 메시지 보안 강화**
+- [x] **에러 메시지 보안 강화**
   - 현재: 내부 에러 메시지가 클라이언트에 노출될 수 있음
   - 개선: 프로덕션에서는 일반적인 메시지만 반환
   - 파일: 모든 라우트 핸들러

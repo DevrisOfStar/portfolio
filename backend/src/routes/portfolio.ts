@@ -1,117 +1,115 @@
 import { getFullPortfolio, getPersonalInfo, getCareer, getIntroStatements, getGeneralTendencies, getHobbies, getLanguageSkills, getBasicAbilities, getWorkSkills, getThingsToAvoid, getCurrentStatus } from '../db/queries';
+import { createCorsHeaders, createJsonHeaders } from '../utils/cors';
+import type { Env } from '../index';
 
-export async function handlePortfolioRoutes(request: Request, db: D1Database): Promise<Response> {
+export async function handlePortfolioRoutes(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
   const path = url.pathname;
-
-  // CORS headers
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
+  const corsHeaders = createCorsHeaders(request, env, {
+    methods: 'GET, OPTIONS',
+    headers: 'Content-Type',
+  });
 
   if (request.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { status: 204, headers: corsHeaders });
   }
 
   try {
     // Full portfolio data
     if (path === '/api/portfolio' || path === '/api/portfolio/') {
       try {
-        const data = await getFullPortfolio(db);
+        const data = await getFullPortfolio(env.DB);
         return new Response(JSON.stringify(data), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          headers: createJsonHeaders(corsHeaders),
         });
       } catch (error: any) {
         console.error('Error in getFullPortfolio:', error);
         return new Response(JSON.stringify({ 
-          error: 'Failed to fetch portfolio data',
-          message: error?.message || 'Unknown error'
+          error: 'Failed to fetch portfolio data'
         }), {
           status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          headers: createJsonHeaders(corsHeaders),
         });
       }
     }
 
     // Personal info
     if (path === '/api/portfolio/personal') {
-      const data = await getPersonalInfo(db);
+      const data = await getPersonalInfo(env.DB);
       return new Response(JSON.stringify(data), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: createJsonHeaders(corsHeaders),
       });
     }
 
     // Career
     if (path === '/api/portfolio/career') {
-      const data = await getCareer(db);
+      const data = await getCareer(env.DB);
       return new Response(JSON.stringify(data), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: createJsonHeaders(corsHeaders),
       });
     }
 
     // Intro statements
     if (path === '/api/portfolio/intro-statements') {
-      const data = await getIntroStatements(db);
+      const data = await getIntroStatements(env.DB);
       return new Response(JSON.stringify(data), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: createJsonHeaders(corsHeaders),
       });
     }
 
     // General tendencies
     if (path === '/api/portfolio/general-tendencies') {
-      const data = await getGeneralTendencies(db);
+      const data = await getGeneralTendencies(env.DB);
       return new Response(JSON.stringify(data), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: createJsonHeaders(corsHeaders),
       });
     }
 
     // Hobbies
     if (path === '/api/portfolio/hobbies') {
-      const data = await getHobbies(db);
+      const data = await getHobbies(env.DB);
       return new Response(JSON.stringify(data), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: createJsonHeaders(corsHeaders),
       });
     }
 
     // Language skills
     if (path === '/api/portfolio/language-skills') {
-      const data = await getLanguageSkills(db);
+      const data = await getLanguageSkills(env.DB);
       return new Response(JSON.stringify(data), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: createJsonHeaders(corsHeaders),
       });
     }
 
     // Basic abilities
     if (path === '/api/portfolio/basic-abilities') {
-      const data = await getBasicAbilities(db);
+      const data = await getBasicAbilities(env.DB);
       return new Response(JSON.stringify(data), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: createJsonHeaders(corsHeaders),
       });
     }
 
     // Work skills
     if (path === '/api/portfolio/work-skills') {
-      const data = await getWorkSkills(db);
+      const data = await getWorkSkills(env.DB);
       return new Response(JSON.stringify(data), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: createJsonHeaders(corsHeaders),
       });
     }
 
     // Things to avoid
     if (path === '/api/portfolio/things-to-avoid') {
-      const data = await getThingsToAvoid(db);
+      const data = await getThingsToAvoid(env.DB);
       return new Response(JSON.stringify(data), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: createJsonHeaders(corsHeaders),
       });
     }
 
     // Current status
     if (path === '/api/portfolio/current-status') {
-      const data = await getCurrentStatus(db);
+      const data = await getCurrentStatus(env.DB);
       return new Response(JSON.stringify(data), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: createJsonHeaders(corsHeaders),
       });
     }
 
@@ -120,7 +118,7 @@ export async function handlePortfolioRoutes(request: Request, db: D1Database): P
     console.error('Error handling portfolio route:', error);
     return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
       status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: createJsonHeaders(corsHeaders),
     });
   }
 }

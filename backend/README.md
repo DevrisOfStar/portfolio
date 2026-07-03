@@ -145,6 +145,32 @@ npm run dev
 
 서버가 `http://localhost:8787`에서 실행됩니다.
 
+## 보안 설정
+
+### CORS 허용 도메인
+
+API는 허용된 Origin에만 CORS 응답을 반환합니다.
+로컬 개발은 `http://localhost:5173`, `http://127.0.0.1:5173`,
+`http://localhost:4173`, `http://127.0.0.1:4173`을 기본 허용합니다.
+
+프로덕션 프론트엔드 도메인은 Cloudflare Workers 환경 변수로 설정합니다:
+
+```bash
+ALLOWED_ORIGINS=https://your-portfolio-domain.example
+```
+
+여러 도메인은 쉼표로 구분합니다. 기존 단일 값 호환을 위해
+`ALLOWED_ORIGIN`도 사용할 수 있습니다.
+
+### 이미지 업로드 검증
+
+관리자 이미지 업로드는 다음 조건을 모두 만족해야 합니다:
+
+- MIME 타입: `image/jpeg`, `image/png`, `image/gif`, `image/webp`
+- 확장자: `jpg`, `jpeg`, `png`, `gif`, `webp`
+- 최대 파일 크기: 5MB
+- 업로드 경로: `../`, `.` 경로 세그먼트 금지
+
 ## 배포
 
 ### 로컬에서 수동 배포

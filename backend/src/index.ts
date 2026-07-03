@@ -5,6 +5,8 @@ export interface Env {
   DB: D1Database;
   IMAGES: R2Bucket;  // Cloudflare R2 버킷 (이미지 저장용)
   ADMIN_API_KEY?: string;  // 관리자 API 키 (로컬 개발용)
+  ALLOWED_ORIGIN?: string;
+  ALLOWED_ORIGINS?: string;
 }
 
 export default {
@@ -21,7 +23,7 @@ export default {
 
     // Portfolio routes
     if (path.startsWith('/api/portfolio')) {
-      return handlePortfolioRoutes(request, env.DB);
+      return handlePortfolioRoutes(request, env);
     }
 
     // Blog routes

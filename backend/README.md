@@ -156,7 +156,7 @@ API는 허용된 Origin에만 CORS 응답을 반환합니다.
 프로덕션 프론트엔드 도메인은 Cloudflare Workers 환경 변수로 설정합니다:
 
 ```bash
-ALLOWED_ORIGINS=https://your-portfolio-domain.example
+ALLOWED_ORIGINS=https://www.nokda.me
 ```
 
 여러 도메인은 쉼표로 구분합니다. 기존 단일 값 호환을 위해

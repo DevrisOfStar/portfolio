@@ -7,8 +7,9 @@ const __dirname = path.dirname(__filename)
 const projectRoot = path.resolve(__dirname, '..')
 const publicDir = path.join(projectRoot, 'public')
 const sitemapPath = path.join(publicDir, 'sitemap.xml')
+const defaultSiteUrl = 'https://www.nokda.me'
 
-const rawSiteUrl = process.env.VITE_SITE_URL || process.env.SITE_URL || 'https://example.com'
+const rawSiteUrl = process.env.VITE_SITE_URL || process.env.SITE_URL || defaultSiteUrl
 const siteUrl = rawSiteUrl.replace(/\/+$/, '')
 const lastmod = new Date().toISOString().split('T')[0]
 
@@ -43,8 +44,8 @@ ${routes
 await mkdir(publicDir, { recursive: true })
 await writeFile(sitemapPath, xml, 'utf8')
 
-if (rawSiteUrl === 'https://example.com') {
-  console.warn('VITE_SITE_URL or SITE_URL is not set. Generated sitemap.xml with https://example.com.')
+if (rawSiteUrl === defaultSiteUrl) {
+  console.log(`Generated sitemap.xml for default site URL ${siteUrl}`)
 } else {
   console.log(`Generated sitemap.xml for ${siteUrl}`)
 }

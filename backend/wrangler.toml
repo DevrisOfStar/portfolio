@@ -17,7 +17,7 @@ bucket_name = "portfolio-images"  # 공용 R2 bucket
 name = "portfolio-api"
 
 [env.production.vars]
-ALLOWED_ORIGINS = "https://www.nokda.me"
+ALLOWED_ORIGINS = "https://portfolio-2hq.pages.dev"
 
 [[env.production.d1_databases]]
 binding = "DB"

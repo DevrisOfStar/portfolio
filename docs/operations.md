@@ -36,7 +36,7 @@ npm run dev
 ### 백엔드
 
 - `ADMIN_API_KEY`: 관리자 쓰기 API 인증 키
-- `ALLOWED_ORIGIN`, `ALLOWED_ORIGINS`: 추가 CORS 허용 Origin
+- `ALLOWED_ORIGIN`, `ALLOWED_ORIGINS`: 추가 CORS 허용 Origin. 현재 production Origin은 `https://portfolio-2hq.pages.dev`
 - `CLOUDFLARE_API_TOKEN`: GitHub Actions 배포 인증
 - `CLOUDFLARE_ACCOUNT_ID`: Cloudflare 계정 ID
 - `PROD_DB_ID`: production D1 ID

@@ -4,7 +4,7 @@
 
 - 프로덕션 기준 URL: `https://portfolio-api.yh1483.workers.dev`
 - JSON 응답은 `Content-Type: application/json`을 사용한다.
-- 프로덕션 웹 Origin은 `https://www.nokda.me`다.
+- 프로덕션 웹 Origin은 `https://portfolio-2hq.pages.dev`다.
 - 관리자 요청은 `X-API-Key` 헤더가 필요하다.
 
 ## 상태 확인

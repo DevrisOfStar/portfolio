@@ -2,6 +2,9 @@
 
 Cloudflare Workers와 D1을 사용한 포트폴리오 백엔드 API입니다.
 
+API 계약과 운영 정책의 기준은 `../docs/api-contracts.md`,
+`../docs/admin-blog-policy.md`, `../docs/operations.md`를 확인하세요.
+
 ## 필수 요구사항
 
 - Node.js 16.17.0 이상
@@ -221,9 +224,14 @@ GitHub 저장소의 **Settings → Secrets and variables → Actions**에서 다
 - `GET /api/blog` - 블로그 목록 (쿼리: `?category=개발&search=검색어`)
 - `GET /api/blog/:id` - 블로그 상세
 
-### 관리자 API (로컬 개발 전용)
+### 관리자 API
 
-**주의**: 이 API는 로컬 개발 환경(localhost)에서만 사용 가능하며, API 키 인증이 필요합니다.
+관리자 작성 UI는 로컬 개발 환경에서만 사용하며 API 키 인증이 필요합니다.
+목표 동작은 로컬 작성 UI에서 프로덕션 Workers를 호출해 production D1/R2에
+저장하는 것입니다. 현재 백엔드는 요청 URL이 localhost가 아니면 관리자 요청을
+거부하므로 목표 동작과 불일치하며, 후속 인증 수정이 필요합니다.
+
+정확한 정책과 완료 조건은 `../docs/admin-blog-policy.md`를 따릅니다.
 
 #### 환경 변수 설정
 
@@ -232,10 +240,7 @@ GitHub 저장소의 **Settings → Secrets and variables → Actions**에서 다
 **방법 1: .dev.vars 파일 사용 (권장)**
 
 ```bash
-# .dev.vars.example을 복사하여 .dev.vars 생성
-cp .dev.vars.example .dev.vars
-
-# .dev.vars 파일 편집하여 API 키 설정
+# .dev.vars 파일을 생성하고 API 키 설정
 # ADMIN_API_KEY=your-secret-key-here
 ```
 
